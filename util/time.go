@@ -6,13 +6,6 @@ import (
 	"time"
 )
 
-// format time to 2006-01-02 15:04:05 format
-func FormatTime(ts interface{}) string {
-	t := ParseTime(ts)
-	return t.Format("2006-01-02 15:04:05")
-}
-
-// parse time from any time format
 func ParseTime(timeStr interface{}) (t time.Time) {
 	switch v := timeStr.(type) {
 	case int, int64, uint64:
@@ -22,6 +15,11 @@ func ParseTime(timeStr interface{}) (t time.Time) {
 		t = parse(v)
 	case time.Time:
 		t = v
+	case *time.Time:
+		if v == nil {
+			return
+		}
+		t = *v
 	}
 	return
 }
@@ -78,4 +76,25 @@ func parse(ts string) (t time.Time) {
 		return
 	}
 	return
+}
+
+func FormatTime(ts interface{}) string {
+	if ts == nil {
+		return ""
+	}
+
+	t := ParseTime(ts)
+	return t.Format("2006-01-02 15:04:05")
+}
+
+func SameDay(a, b interface{}) bool {
+	return DiffDay(a, b) == 0
+}
+
+func DiffDay(a, b interface{}) int {
+	at := ParseTime(a)
+	bt := ParseTime(b)
+	at1 := time.Date(at.Year(), at.Month(), at.Day(), 0, 0, 0, 0, time.Local)
+	bt1 := time.Date(bt.Year(), bt.Month(), bt.Day(), 0, 0, 0, 0, time.Local)
+	return int(at1.Sub(bt1) / (time.Hour * 24))
 }
