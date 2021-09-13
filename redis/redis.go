@@ -4,10 +4,10 @@ import (
 	"time"
 
 	"github.com/gomodule/redigo/redis"
-	"github.com/json-iterator/go"
+	jsonit "github.com/json-iterator/go"
 )
 
-var json = jsoniter.ConfigCompatibleWithStandardLibrary
+var json = jsonit.ConfigCompatibleWithStandardLibrary
 
 func GetRedisPool(address, password string, maxConnection int) *redis.Pool {
 	pool := &redis.Pool{
@@ -40,7 +40,7 @@ func dial(network, address, password string) (redis.Conn, error) {
 	return c, err
 }
 
-func RedisTest(address, password string) error {
+func Test(address, password string) error {
 	c, err := redis.Dial("tcp", address)
 	if err != nil {
 		return err
@@ -56,7 +56,7 @@ func RedisTest(address, password string) error {
 	return err
 }
 
-func RedisIncr(key string, ttl int, pool *redis.Pool) error {
+func Incr(key string, ttl int, pool *redis.Pool) error {
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -76,7 +76,7 @@ func RedisIncr(key string, ttl int, pool *redis.Pool) error {
 	return nil
 }
 
-func RedisIncrBy(key string, incrAmount uint64, ttl int, pool *redis.Pool) error {
+func IncrBy(key string, incrAmount uint64, ttl int, pool *redis.Pool) error {
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -96,7 +96,7 @@ func RedisIncrBy(key string, incrAmount uint64, ttl int, pool *redis.Pool) error
 	return nil
 }
 
-func RedisGetKeysByPattern(pattern string, pool *redis.Pool) ([]string, error) {
+func GetKeysByPattern(pattern string, pool *redis.Pool) ([]string, error) {
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -108,7 +108,7 @@ func RedisGetKeysByPattern(pattern string, pool *redis.Pool) ([]string, error) {
 	return data, err
 }
 
-func RedisSetUint64(key string, value uint64, ttl int, pool *redis.Pool) error {
+func SetUint64(key string, value uint64, ttl int, pool *redis.Pool) error {
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -120,7 +120,7 @@ func RedisSetUint64(key string, value uint64, ttl int, pool *redis.Pool) error {
 
 }
 
-func RedisSetKeyExpire(key string, ttl int, pool *redis.Pool) error {
+func SetKeyExpire(key string, ttl int, pool *redis.Pool) error {
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -134,7 +134,7 @@ func RedisSetKeyExpire(key string, ttl int, pool *redis.Pool) error {
 	return nil
 }
 
-func RedisGetUint64(key string, pool *redis.Pool) (uint64, error) {
+func GetUint64(key string, pool *redis.Pool) (uint64, error) {
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -149,7 +149,7 @@ func RedisGetUint64(key string, pool *redis.Pool) (uint64, error) {
 	return n, err
 }
 
-func RedisSetObject(key string, obj interface{}, ttl int, pool *redis.Pool) error {
+func SetObject(key string, obj interface{}, ttl int, pool *redis.Pool) error {
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -165,7 +165,7 @@ func RedisSetObject(key string, obj interface{}, ttl int, pool *redis.Pool) erro
 	return err
 }
 
-func RedisGetObject(key string, obj interface{}, pool *redis.Pool) (bool, error) {
+func GetObject(key string, obj interface{}, pool *redis.Pool) (bool, error) {
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -187,7 +187,7 @@ func RedisGetObject(key string, obj interface{}, pool *redis.Pool) (bool, error)
 	return true, nil
 }
 
-func RedisSetString(key, value string, ttl int, pool *redis.Pool) error {
+func SetString(key, value string, ttl int, pool *redis.Pool) error {
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -198,7 +198,7 @@ func RedisSetString(key, value string, ttl int, pool *redis.Pool) error {
 	return err
 }
 
-func RedisGetString(key string, pool *redis.Pool) (string, error) {
+func GetString(key string, pool *redis.Pool) (string, error) {
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -213,7 +213,7 @@ func RedisGetString(key string, pool *redis.Pool) (string, error) {
 	return s, nil
 }
 
-func RedisSetInt(key string, value, ttl int, pool *redis.Pool) error {
+func SetInt(key string, value, ttl int, pool *redis.Pool) error {
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -224,7 +224,7 @@ func RedisSetInt(key string, value, ttl int, pool *redis.Pool) error {
 	return err
 }
 
-func RedisGetInt(key string, pool *redis.Pool) (int, error) {
+func GetInt(key string, pool *redis.Pool) (int, error) {
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -239,7 +239,7 @@ func RedisGetInt(key string, pool *redis.Pool) (int, error) {
 	return n, err
 }
 
-func RedisDelKey(key string, pool *redis.Pool) error {
+func DelKey(key string, pool *redis.Pool) error {
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -252,7 +252,7 @@ func RedisDelKey(key string, pool *redis.Pool) error {
 	return err
 }
 
-func RedisPublish(channel, message string, pool *redis.Pool) error {
+func Publish(channel, message string, pool *redis.Pool) error {
 	conn := pool.Get()
 	defer conn.Close()
 
@@ -265,4 +265,19 @@ func RedisPublish(channel, message string, pool *redis.Pool) error {
 		return err
 	}
 	return nil
+}
+
+func GetSetUint64(key string, value uint64, pool *redis.Pool) (uint64, error) {
+	conn := pool.Get()
+	defer conn.Close()
+
+	if err := conn.Err(); err != nil {
+		return 0, err
+	}
+
+	n, err := redis.Uint64(conn.Do("GETSET", key, value))
+	if err != nil {
+		return 0, err
+	}
+	return n, err
 }
