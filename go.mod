@@ -1,4 +1,4 @@
-module cache
+module github.com/seaguest/common
 
 go 1.15
 
