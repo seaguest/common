@@ -4,10 +4,10 @@ import (
 	"time"
 
 	"github.com/gomodule/redigo/redis"
-	jsonit "github.com/json-iterator/go"
+	"github.com/json-iterator/go"
 )
 
-var json = jsonit.ConfigCompatibleWithStandardLibrary
+var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 func GetRedisPool(address, password string, maxConnection int) *redis.Pool {
 	pool := &redis.Pool{
